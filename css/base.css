@@ -1,0 +1,431 @@
+@charset "UTF-8";
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;300&display=swap");
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+body,
+html {
+  min-height: 100%;
+  background-color: rgb(24, 21, 21);
+  color: #fff;
+  font-weight: bold;
+  height: 100%;
+}
+body {
+  background: radial-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)),
+    url("../images/bg-1.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top right;
+  font-family: "EB Garamond", serif;
+}
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.85rem;
+}
+h3 {
+  font-size: 1.65rem;
+}
+
+label,
+span,
+p {
+  font-size: 1.45rem;
+}
+img {
+  display: block;
+  margin: auto;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.container-inner {
+  max-width: 980px;
+  width: 100%;
+  margin: auto;
+}
+
+h1 {
+  font-weight: 300;
+  text-align: center;
+}
+
+h2 {
+  font-weight: 500;
+}
+
+.prompt-area {
+  display: block;
+  width: 100%;
+}
+.answers-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 20vh;
+}
+.answer-div {
+  width: calc(100% - 25%);
+  margin: auto;
+  align-items: center;
+  align-self: flex-end;
+  flex-direction: column;
+}
+.credit {
+  text-align: center;
+  color: rgb(111, 111, 111);
+  display: block;
+  margin: 25px auto auto;
+}
+#kb-total {
+  font-weight: bold;
+}
+
+#kb-list {
+  visibility: hidden;
+  opacity: 0;
+  animation: 1s opacity linear;
+  display: none;
+}
+
+#kb-list.fade-in {
+  opacity: 1;
+  visibility: visible;
+  display: block;
+}
+
+.show-modal {
+  font-size: 2rem;
+  font-weight: 600;
+  padding: 1.75rem 3.5rem;
+  margin: 5rem 2rem;
+  border: none;
+  background-color: #fff;
+  color: #444;
+  border-radius: 10rem;
+  cursor: pointer;
+}
+
+.close-modal {
+  position: absolute;
+  top: 1.2rem;
+  right: 2rem;
+  font-size: 5rem;
+  color: rgb(101, 100, 100);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.hidden {
+  opacity: 0;
+  display: none;
+}
+
+.modal {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 6rem;
+  border-radius: 5px;
+  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  opacity: 0;
+  display: block;
+}
+
+.modal-fade-out {
+  animation: fadeOut 1s ease-in-out;
+  opacity: 0;
+}
+
+.modal-fade-in {
+  animation: fadeIn 1s ease-in-out;
+  opacity: 1;
+}
+
+#message-modal img {
+  max-width: 300px;
+  width: 80%;
+}
+
+.init-modal img {
+  width: 80%;
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 5;
+}
+
+/*init modal*/
+.init-modal {
+  height: 100%;
+  width: 100%;
+  background-color: #000;
+  text-align: center;
+}
+.init-modal * {
+  margin: 2% auto;
+}
+#house-img {
+  width: 100px;
+  height: 130px;
+  position: absolute;
+  top: 40%;
+  left: 20%;
+  z-index: 2;
+}
+[selected-house="Ravenclaw"] {
+  background-color: #0e1a40;
+}
+[selected-house="Hufflepuff"] {
+  background-color: #ffd800;
+  color: #000 !important;
+}
+[selected-house="Slytherin"] {
+  background-color: #1a472a;
+}
+[selected-house="Gryffindor"] {
+  background-color: #740001;
+}
+
+.init-modal [selected-house="Ravenclaw"] {
+  background: url("../images/ravenclaw.svg") no-repeat center center / contain;
+}
+.init-modal [selected-house="Hufflepuff"] {
+  background: url("../images/hufflepuff.svg") no-repeat center center / contain;
+}
+.init-modal [selected-house="Slytherin"] {
+  background: url("../images/slytherin.svg") no-repeat center center / contain;
+}
+.init-modal [selected-house="Gryffindor"] {
+  background: url("../images/gryffindor.svg") no-repeat center center / contain;
+}
+
+[selected-house="Ravenclaw"] svg .sheild-light {
+  fill: #20398c;
+}
+[selected-house="Ravenclaw"] svg .sheild-dark {
+  fill: #0f2363;
+}
+[selected-house="Hufflepuff"] svg .sheild-light {
+  fill: #feeb7e;
+}
+[selected-house="Hufflepuff"] svg .sheild-dark {
+  fill: #dabf22;
+}
+[selected-house="Slytherin"] svg .sheild-light {
+  fill: #26633b;
+}
+[selected-house="Slytherin"] svg .sheild-dark {
+  fill: #0b3f1d;
+}
+[selected-house="Gryffindor"] svg .sheild-light {
+  fill: #9d2224;
+}
+[selected-house="Gryffindor"] svg .sheild-dark {
+  fill: #5e0e10;
+}
+
+.info-area {
+  position: relative;
+  bottom: 0;
+  color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 0 5vw;
+  min-height: 30vh;
+}
+
+.sheild-container {
+  width: 30px;
+  height: 40px;
+  margin: auto;
+  display: block;
+  position: absolute;
+  left: 41%;
+  top: 45%;
+  z-index: 3;
+}
+
+/* canvas */
+
+.canvas-container {
+  position: relative;
+  max-width: 150px;
+  min-height: 200px;
+  max-height: 200px;
+  z-index: 6;
+}
+
+#points {
+  position: relative;
+  z-index: 6;
+}
+#drawPoints-canvas {
+  /* clip-path: polygon(0% 0%, 100% 0, 99% 72%, 50% 100%, 0 73%); */
+  max-width: 70px;
+  margin: auto;
+  position: absolute;
+  bottom: 13%;
+  margin-left: 30%;
+  display: block;
+  /* z-index: 0; */
+}
+@keyframes addPoints {
+  from {
+    background-position: 50% -30%;
+    opacity: 1;
+  }
+  to {
+    background-position: 50% 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes removePoints {
+  from {
+    background-position: 50% 90%;
+    opacity: 1;
+  }
+  to {
+    background-position: 50% 20%;
+    opacity: 0;
+  }
+}
+
+@keyframes moveScoreText {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+#house-info {
+  z-index: 6;
+}
+#score-text {
+  z-index: 6;
+}
+.score-animation {
+  position: relative;
+  animation: moveScoreText 1s ease-in-out;
+}
+
+.points-animation {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: block;
+  top: 0;
+  background-image: url("../images/point-animation.png");
+  background-size: 32px;
+  background-repeat: no-repeat;
+  /* z-index: 2; */
+  opacity: 0;
+}
+
+.add-points {
+  animation: addPoints 1s ease-in-out;
+  opacity: 0;
+}
+
+.remove-points {
+  animation: removePoints 1s ease-in-out;
+  opacity: 0;
+}
+footer {
+  background: rgb(24, 21, 21);
+  color: #fff;
+  text-align: center;
+  width: 100%;
+}
+
+footer a {
+  display: inline-block;
+  margin: 20px;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+}
+
+#prompt-container {
+  text-align: center;
+  margin: 20px auto;
+}
+
+#score-area {
+  min-height: 150px;
+  text-align: center;
+  width: 100%;
+}
+
+button {
+  margin: 20px auto;
+  display: block;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  max-width: 350px;
+  margin: 20px auto;
+}
+
+.hidden {
+  display: none;
+  visibility: hidden;
+  animation: fadeOut 1s ease-in-out;
+}
+
+label {
+  margin: 0 20px 0 5px;
+}
+
+.score-text {
+  margin: 20px auto;
+  background: rgba(17, 0, 255, 0.185);
+  padding: 10px;
+}

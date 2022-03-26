@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wizarding World Quiz</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <section class="container">
+        <!-- <p>Total weight of this project: <span id="kb-total"></span></p>
+        <ul id="kb-list">
+            <li>main.js: 5KB</li>
+        </ul> -->
+        <div class="container-inner">
+            <div id="prompt-container">
+                <progress value="" max=""></progress>
+                <h3 id="question-num"></h3>
+                <h2 id="question"></h2>
+                <div id="answers" class="answers-container">
+                </div>
+                <!-- <button id="continue-btn" role="button">Continue</button> -->
+            </div>
+        </div>
+
+        <div class="info-area" selected-house="">
+            <h3 id="house-info"></h3>
+            <div class="canvas-container">
+                <canvas id="points">
+                </canvas>
+                <canvas id="drawPoints-canvas">
+                </canvas>
+                <div class="points-animation"></div>
+                <div class="sheild-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 73.72 94.89">
+                        <defs>
+                            <style>
+                                .cls-1 {
+                                    fill: #110f0d;
+                                }
+
+                                .cls-2 {
+                                    fill: #232221;
+                                }
+                            </style>
+                        </defs>
+                        <g id="" data-name="Layer 2">
+                            <g id="sheild-svg" data-name="Layer 1">
+                                <path id="sheild-outer" class="cls-1"
+                                    d="M22.1,81.5C8.06,69.38,0,52.32,0,34.72V5.39L14.52,2.32a108.72,108.72,0,0,1,44.68,0L73.72,5.39V34.75c0,17.54-7.86,34.7-21.58,47.05L37.61,94.89Z" />
+                                <path id="sheild-top-right" class="sheild-light cls-2"
+                                    d="M68.72,9.44v25.3A54.11,54.11,0,0,1,68.09,43H37.14L36.8,5A103.79,103.79,0,0,1,58.17,7.22Z" />
+                                <path id="sheild-top-left" class="sheild-dark cls-1"
+                                    d="M37.14,43H5.65A53.14,53.14,0,0,1,5,34.72V9.44L15.55,7.22A102.64,102.64,0,0,1,36.8,5Z" />
+                                <path id="sheild-bottom-left" class="sheild-light cls-2"
+                                    d="M37.54,88.23,25.37,77.72A57.67,57.67,0,0,1,5.65,43H37.14Z" />
+                                <path id="sheild-bottom-right" class="sheild-dark cls-1"
+                                    d="M68.09,43A59.2,59.2,0,0,1,48.8,78.09L37.54,88.23,37.14,43Z" />
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+            <h3 id="score-text">Score:
+                <span id="score"></span>
+            </h3>
+        </div>
+
+    </section>
+    <div id="init-modal" class="modal init-modal hidden">
+        <button class="close-modal">&times;</button>
+        <h1>Test Your Harry Potter Knowledge! ⚡️</h1>
+        <p>Before you begin, the sorting hat must place you in your house.</p>
+        <h2 id="house-message"></h2>
+        <h1 id="house-output" class="house">
+        </h1>
+        <div id="house-img"></div>
+        <div class="sorting-hat">
+            <img src="images/hat-1.webp" />
+        </div>
+        <button class="hidden" id="start-quiz" role="button">Start Playing</button>
+    </div>
+    <div id="message-modal" class="modal hidden">
+        <button class="close-modal">&times;</button>
+        <h1 id="message"></h1>
+        <img id="message-img" src="" />
+        <small class="credit" id="img-credit"></small>
+    </div>
+    <div class="overlay hidden"></div>
+    <!-- <footer>
+        <a href="https://github.com/vit-the-jedi">My Github</a> | <a
+            href="https://github.com/vit-the-jedi/simple-quiz">Repo</a>
+    </footer> -->
+    <script src="js/main.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/init.js"></script>
+
+    <!-- <script src="js/index.js"></script> -->
+</body>
+
+</html>
