@@ -200,7 +200,7 @@ const questionsMap = new Map([
         [2, "Harry Potter"],
         [3, "Molly Weasley"],
       ],
-      correct: 1,
+      correct: 3,
       true: 12,
       false: 13,
     },
