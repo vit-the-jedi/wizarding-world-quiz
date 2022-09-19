@@ -280,6 +280,7 @@ function startPrompts() {
   if (!question) {
     finishPrompts();
   } else {
+    leaderboardOutput.style.display = "none";
     removePrevQuestion();
     askUser(question);
   }
@@ -327,10 +328,30 @@ const showAnswerMessage = function (bool, obj) {
     ${obj[bool.toString()]} point(s) taken away from ${userHouse}`;
     generateRandImg(falseImgArray, messageImg);
   }
+  console.log("open msg modal");
   openModal(messageModal);
   removePrevQuestion();
 };
-
+function finishPrompts() {
+  const promptContainer = document.getElementById("prompt-container");
+  const msgHeader = document.getElementById("message");
+  const leaderboard = document.querySelector("#leaderboard");
+  while (promptContainer.firstChild) {
+    promptContainer.removeChild(promptContainer.lastChild);
+  }
+  //const finalScore = calcScore(answerArray);
+  //sessionStorage.setItem("final-score", JSON.stringify(finalScore));
+  const scoreText = document.createElement("p");
+  // scoreText.classList.add("score-text");
+  // scoreText.textContent = `Final Score: ${score}`;
+  // messageModal.prepend(scoreText);
+  // msgHeader.textContent = `Please refresh your browser to take the quiz again.`;
+  // openModal(messageModal);
+  leaderboard.style.display = "flex";
+  console.log(leaderboard);
+  const itemsToClear = ["prompt", "answers"];
+  //clearStorage(itemsToClear);
+}
 const generateRandImg = function (arr, img) {
   const max = arr.length - 1;
   const randNum = Math.floor(Math.random() * (max - 0 + 1) + 0);
@@ -486,35 +507,6 @@ const checkAnswer = function (val, obj) {
   //start prompts again
   startPrompts();
 };
-
-function finishPrompts() {
-  const promptContainer = document.getElementById("prompt-container");
-  const scoreArea = document.getElementById("score-area");
-  const answerArray = JSON.parse(sessionStorage.getItem("answers"));
-  const replayMessage = document.createElement("p");
-
-  while (promptContainer.firstChild) {
-    promptContainer.removeChild(promptContainer.lastChild);
-  }
-
-  const calcScore = function (arr) {
-    const reducer = (prevValue, currValue) => prevValue + currValue;
-    const score = arr.reduce(reducer);
-    return Number(score);
-  };
-
-  const finalScore = calcScore(answerArray);
-  sessionStorage.setItem("final-score", JSON.stringify(finalScore));
-  const scoreText = document.createElement("p");
-  scoreText.classList.add("score-text");
-
-  scoreArea.appendChild(scoreText);
-  replayMessage.textContent = `${finalScore} Please refresh your browser to take the quiz again.`;
-  scoreArea.appendChild(replayMessage);
-
-  const itemsToClear = ["prompt", "answers"];
-  clearStorage(itemsToClear);
-}
 
 function clearStorage(arr) {
   for (let o = 0; o < arr.length; o++) {

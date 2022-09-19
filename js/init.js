@@ -4,6 +4,7 @@ const startButton = document.querySelector("#start-quiz");
 const houseInfo = document.querySelector("#house-info");
 const infoArea = document.querySelector(".info-area");
 const houses = ["Slytherin", "Hufflepuff", "Gryffindor", "Ravenclaw"];
+const usernameInput = document.querySelector("#username-input");
 let previousHouse = [];
 let sorted = sessionStorage.getItem("sorted") ?? false;
 
@@ -52,10 +53,16 @@ function startQuiz(house) {
   infoArea.setAttribute("selected-house", house);
   sessionStorage.setItem("sorted", sorted);
   sessionStorage.setItem("house", house);
-  startButton.classList.remove("hidden");
-  startButton.addEventListener("click", function () {
-    closeModal(initModal);
+  usernameInput.addEventListener("keyup", function () {
+    if (this.value.length > 5) {
+      startButton.classList.remove("hidden");
+      startButton.addEventListener("click", function () {
+        sessionStorage.setItem("username", usernameInput.value);
+        closeModal(initModal);
+      });
+    }
   });
+
   initCanvas();
 }
 
