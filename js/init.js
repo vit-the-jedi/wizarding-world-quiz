@@ -46,7 +46,33 @@ function sortUser(callback) {
     })(i);
   }
 }
-
+const initCanvas = function () {
+  const canvas = document.getElementById("points");
+  const canvasParent = document.querySelector(".canvas-container");
+  const canvasWidth = canvasParent.getBoundingClientRect().width;
+  const canvasHeight = canvasParent.getBoundingClientRect().height;
+  let context = canvas.getContext("2d");
+  //relative width + height for points chalice
+  canvas.setAttribute("width", canvasWidth);
+  canvas.setAttribute("height", canvasHeight);
+  let pointsBgImg = new Image();
+  pointsBgImg.src = "images/points-bg.png";
+  //draw our points img
+  pointsBgImg.onload = function () {
+    context.drawImage(
+      pointsBgImg,
+      //x axis pos
+      0,
+      //y axis pos
+      0,
+      //width
+      canvasWidth,
+      //height
+      canvasHeight
+    );
+  };
+  // drawPoints(animatePointsClassHandler);
+};
 function startQuiz(house) {
   sorted = true;
   houseInfo.textContent = `${house}`;
@@ -82,3 +108,4 @@ if (!sorted) {
   const house = sessionStorage.getItem("house");
   startQuiz(house);
 }
+window.addEventListener("resize", initCanvas);

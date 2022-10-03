@@ -2,10 +2,10 @@
 var webpack = require("webpack");
 module.exports = {
   entry: {
-    entry: __dirname + "/js/data.js",
+    entry: __dirname + "/js/main.js",
   },
   output: {
-    filename: "data.bundle.js",
+    filename: "main.bundle.js",
   },
   module: {
     rules: [
