@@ -12,6 +12,27 @@ import {
 const leaderboardOutput = document.querySelector("#leaderboard");
 leaderboardOutput.classList.add("data-output");
 leaderboardOutput.classList.add("leaderboard--output");
+
+async function populateLeaderboard() {
+  console.log("auyy");
+  //get leaderboard from firebase
+  const leaderboardDataFromFB = await getLeaderboardData(db);
+  const heading = document.createElement("h3");
+  heading.textContent = "Quiz Leaderboard";
+  leaderboardOutput.prepend(heading);
+  //append data to leaderboard
+  let count = 0;
+  for (const obj of leaderboardDataFromFB) {
+    console.log(obj);
+    for (const [username, userData] of Object.entries(obj)) {
+      count++;
+      const newRow = createRow("leaderboard", count);
+      newRow.textContent = `${username}: ${userData.score}`;
+      leaderboardOutput.appendChild(newRow);
+    }
+  }
+  leaderboardOutput.style.display = "flex";
+}
 //utility to create rows for data output
 //pass in the context of our data, to be used as a unique identifier
 //pass in index to increment
@@ -420,20 +441,7 @@ async function finishPrompts() {
   while (promptContainer.firstChild) {
     promptContainer.removeChild(promptContainer.lastChild);
   }
-  //get leaderboard from firebase
-  const leaderboardDataFromFB = await getLeaderboardData(db);
-  const heading = document.createElement("h3");
-  heading.textContent = "Quiz Leaderboard";
-  leaderboard.prepend(heading);
-  //append data to leaderboard
-  let count = 0;
-  for (const [key, value] of Object.entries(leaderboardDataFromFB[0])) {
-    count++;
-    const newRow = createRow("leaderboard", count);
-    newRow.textContent = `${key}: ${value}`;
-    leaderboard.appendChild(newRow);
-  }
-  leaderboard.style.display = "flex";
+  await populateLeaderboard();
   const itemsToClear = ["prompt", "answers"];
   clearStorage(itemsToClear);
 }
@@ -569,7 +577,7 @@ function clearStorage(arr) {
     sessionStorage.clear(arr[o]);
   }
 }
-
+await populateLeaderboard();
 function handleTextArea(event) {
   const targetInput = event.target;
   const textArea = document.querySelector(".text-input");
@@ -689,7 +697,6 @@ const init = function () {
   //🛑need to set up async functions to await the end of house sorting before hiding modal
   //   initModal.classList.add("hidden");
 };
-
 if (!sorted) {
   init();
 } else {

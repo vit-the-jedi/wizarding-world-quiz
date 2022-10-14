@@ -9,9 +9,10 @@ import {
   setDoc,
   doc,
   query,
+  where,
   orderBy,
   limit,
-} from "firebase/firestore/lite";
+} from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -33,14 +34,30 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function getLeaderboardData(db) {
-  const userDataCol = collection(db, "leaderboard");
-  const userDataSnapshot = await getDocs(userDataCol);
-  //const userDataList = userDataSnapshot.docs.map((doc) => doc.data());
-  const userDataList = query(userDataCol, orderBy("score"), limit(10));
-  console.log(userDataList);
-  return userDataList;
+  // const docRef = doc(db, "leaderboard", "scores");
+  // const docSnap = await getDoc(docRef);
+  const scoreCollection = collection(db, "leaderboard");
+  // const scoreDoc = await getDoc(db, scoreCollection, "scores");
+  // console.log(scoreDoc);
+  //const data = docSnap.data().score_data;
+  const orderedDataQuery = query(
+    scoreCollection,
+    orderBy("score", "desc"),
+    limit(25)
+  );
+  const orderedData = await getDocs(orderedDataQuery);
+  //order data highest -> lowest
+  let dataArr = [];
+  orderedData.forEach((doc) => {
+    //create empty obj to store values
+    const nestedDataObj = {};
+    nestedDataObj[doc.id] = doc.data();
+    //push to array so we can preserve the correct order we got from firebase query
+    dataArr.push(nestedDataObj);
+  });
+  console.log(dataArr);
+  return dataArr;
 }
-
 async function addToFirestore(coll, docName, data = null) {
   const docRef = doc(db, "leaderboard", docName);
   setDoc(docRef, data, { merge: true })
