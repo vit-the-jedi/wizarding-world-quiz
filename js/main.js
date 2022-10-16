@@ -676,12 +676,15 @@ function startQuiz(house) {
   sessionStorage.setItem("sorted", sorted);
   sessionStorage.setItem("house", house);
   usernameInput.addEventListener("keyup", function () {
+    console.log(this.value.length);
     if (this.value.length > 5) {
       startButton.classList.remove("hidden");
       startButton.addEventListener("click", function () {
         sessionStorage.setItem("username", usernameInput.value);
         closeModal(initModal);
       });
+    } else {
+      startButton.classList.add("hidden");
     }
   });
 
