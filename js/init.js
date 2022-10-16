@@ -4,6 +4,7 @@ const startButton = document.querySelector("#start-quiz");
 const houseInfo = document.querySelector("#house-info");
 const infoArea = document.querySelector(".info-area");
 const houses = ["Slytherin", "Hufflepuff", "Gryffindor", "Ravenclaw"];
+const usernameInput = document.querySelector("#username-input");
 let previousHouse = [];
 let sorted = sessionStorage.getItem("sorted") ?? false;
 
@@ -45,17 +46,49 @@ function sortUser(callback) {
     })(i);
   }
 }
-
+const initCanvas = function () {
+  const canvas = document.getElementById("points");
+  const canvasParent = document.querySelector(".canvas-container");
+  const canvasWidth = canvasParent.getBoundingClientRect().width;
+  const canvasHeight = canvasParent.getBoundingClientRect().height;
+  let context = canvas.getContext("2d");
+  //relative width + height for points chalice
+  canvas.setAttribute("width", canvasWidth);
+  canvas.setAttribute("height", canvasHeight);
+  let pointsBgImg = new Image();
+  pointsBgImg.src = "images/points-bg.png";
+  //draw our points img
+  pointsBgImg.onload = function () {
+    context.drawImage(
+      pointsBgImg,
+      //x axis pos
+      0,
+      //y axis pos
+      0,
+      //width
+      canvasWidth,
+      //height
+      canvasHeight
+    );
+  };
+  // drawPoints(animatePointsClassHandler);
+};
 function startQuiz(house) {
   sorted = true;
   houseInfo.textContent = `${house}`;
   infoArea.setAttribute("selected-house", house);
   sessionStorage.setItem("sorted", sorted);
   sessionStorage.setItem("house", house);
-  startButton.classList.remove("hidden");
-  startButton.addEventListener("click", function () {
-    closeModal(initModal);
+  usernameInput.addEventListener("keyup", function () {
+    if (this.value.length > 5) {
+      startButton.classList.remove("hidden");
+      startButton.addEventListener("click", function () {
+        sessionStorage.setItem("username", usernameInput.value);
+        closeModal(initModal);
+      });
+    }
   });
+
   initCanvas();
 }
 
@@ -75,3 +108,4 @@ if (!sorted) {
   const house = sessionStorage.getItem("house");
   startQuiz(house);
 }
+window.addEventListener("resize", initCanvas);

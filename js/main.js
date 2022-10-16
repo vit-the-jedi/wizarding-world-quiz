@@ -1,5 +1,106 @@
 "use strict";
 
+//firebase stuff
+import {
+  firebaseConfig,
+  app,
+  db,
+  getLeaderboardData,
+  addToFirestore,
+} from "../modules/db.js";
+
+const leaderboardOutput = document.querySelector("#leaderboard");
+leaderboardOutput.classList.add("data-output");
+leaderboardOutput.classList.add("leaderboard--output");
+
+async function populateLeaderboard() {
+  console.log("auyy");
+  //get leaderboard from firebase
+  const leaderboardDataFromFB = await getLeaderboardData(db);
+  const heading = document.createElement("h3");
+  heading.textContent = "Quiz Leaderboard";
+  leaderboardOutput.prepend(heading);
+  //append data to leaderboard
+  let count = 0;
+  for (const obj of leaderboardDataFromFB) {
+    console.log(obj);
+    for (const [username, userData] of Object.entries(obj)) {
+      count++;
+      const newRow = createRow("leaderboard", count);
+      newRow.textContent = `${username}: ${userData.score}`;
+      leaderboardOutput.appendChild(newRow);
+    }
+  }
+  leaderboardOutput.style.display = "flex";
+}
+//utility to create rows for data output
+//pass in the context of our data, to be used as a unique identifier
+//pass in index to increment
+const createRow = (context, index) => {
+  const row = document.createElement("div");
+  row.classList.add("data-row");
+  row.classList.add(`${context}--data`);
+  row.id = `${context}-data-${index}`;
+  return row;
+};
+
+async function leaderboardHandler() {
+  const docName = sessionStorage.getItem("username");
+  const leaderboardData = {
+    score: Number(sessionStorage.getItem("score")),
+  };
+  await addToFirestore("leaderboard", docName, leaderboardData);
+}
+
+//modal utilities
+
+let btnCloseModal;
+let modalState = "closed";
+const overlay = document.querySelector(".overlay");
+const body = document.querySelector("body");
+body.setAttribute("modal-state", modalState);
+const openModal = function (targetModal) {
+  modalState = "open";
+  body.setAttribute("modal-state", modalState);
+  targetModal.classList.remove("hidden");
+  targetModal.classList.add("modal-fade-in");
+  targetModal.classList.remove("modal-fade-out");
+  overlay.classList.remove("hidden");
+  btnCloseModal = targetModal.querySelector(".close-modal");
+  btnCloseModal.addEventListener("click", function () {
+    closeModal(targetModal);
+  });
+};
+
+const closeModal = async function (targetModal) {
+  modalState = "closed";
+  body.setAttribute("modal-state", modalState);
+  targetModal.classList.add("modal-fade-out");
+  targetModal.classList.remove("modal-fade-in");
+  //🛑 will probably need to change this
+  //bad design bc i could change the animation timing on modal-fade css class and then this 1000 ms would fire at the wrong time
+  setTimeout(function () {
+    targetModal.classList.add("hidden");
+    overlay.classList.add("hidden");
+  }, 1000);
+  return modalState;
+};
+
+overlay.addEventListener("click", function () {
+  const activeModal = document.querySelector(".modal-fade-in");
+  closeModal(activeModal);
+});
+
+document.addEventListener("keydown", function (e) {
+  const activeModal = document.querySelector(".modal-fade-in");
+
+  if (e.key === "Escape" && !activeModal.classList.contains("hidden")) {
+    closeModal(activeModal);
+  }
+});
+
+//main app
+
 let count = sessionStorage.getItem("question") ?? 1;
 let score = Number(sessionStorage.getItem("score")) ?? 0;
 let questionMap;
@@ -273,6 +374,7 @@ function startPrompts() {
   const progressBar = document.querySelector("progress");
   const questionNum = sessionStorage.getItem("question") ?? 1;
   const question = questionsMap.get(`question-${questionNum}`);
+  const leaderboardOutput = document.querySelector("#leaderboard");
   progressBar.max = questionsMap.size;
   progressBar.value = questionNum;
   scoreOutput.textContent = score;
@@ -280,6 +382,7 @@ function startPrompts() {
   if (!question) {
     finishPrompts();
   } else {
+    leaderboardOutput.style.display = "none";
     removePrevQuestion();
     askUser(question);
   }
@@ -330,7 +433,18 @@ const showAnswerMessage = function (bool, obj) {
   openModal(messageModal);
   removePrevQuestion();
 };
-
+async function finishPrompts() {
+  const promptContainer = document.getElementById("prompt-container");
+  const msgHeader = document.getElementById("message");
+  const leaderboard = document.querySelector("#leaderboard");
+  await leaderboardHandler();
+  while (promptContainer.firstChild) {
+    promptContainer.removeChild(promptContainer.lastChild);
+  }
+  await populateLeaderboard();
+  const itemsToClear = ["prompt", "answers"];
+  clearStorage(itemsToClear);
+}
 const generateRandImg = function (arr, img) {
   const max = arr.length - 1;
   const randNum = Math.floor(Math.random() * (max - 0 + 1) + 0);
@@ -357,34 +471,6 @@ const generateRandImg = function (arr, img) {
   const imgCredit = document.getElementById("img-credit");
   img.src = `images/${imgSrc}`;
   imgCredit.textContent = `Source: ${credits.get(imgSrc)}`;
-};
-
-const initCanvas = function () {
-  const canvas = document.getElementById("points");
-  const canvasParent = document.querySelector(".canvas-container");
-  const canvasWidth = canvasParent.getBoundingClientRect().width;
-  const canvasHeight = canvasParent.getBoundingClientRect().height;
-  let context = canvas.getContext("2d");
-  //relative width + height for points chalice
-  canvas.setAttribute("width", canvasWidth);
-  canvas.setAttribute("height", canvasHeight);
-  let pointsBgImg = new Image();
-  pointsBgImg.src = "images/points-bg.png";
-  //draw our points img
-  pointsBgImg.onload = function () {
-    context.drawImage(
-      pointsBgImg,
-      //x axis pos
-      0,
-      //y axis pos
-      0,
-      //width
-      canvasWidth,
-      //height
-      canvasHeight
-    );
-  };
-  // drawPoints(animatePointsClassHandler);
 };
 
 //remove animation classes
@@ -432,7 +518,6 @@ const drawPoints = function (callback) {
     let pointsImg = new Image();
     //random y pos between the tier threshold
     const pointsYPos = Math.random() * (pointsYAxisMax - pointSize) + pointSize;
-    console.log(pointsYPos);
     pointsImg.src = "images/point.png";
     //draw our points img
     pointsImg.onload = function () {
@@ -487,41 +572,12 @@ const checkAnswer = function (val, obj) {
   startPrompts();
 };
 
-function finishPrompts() {
-  const promptContainer = document.getElementById("prompt-container");
-  const scoreArea = document.getElementById("score-area");
-  const answerArray = JSON.parse(sessionStorage.getItem("answers"));
-  const replayMessage = document.createElement("p");
-
-  while (promptContainer.firstChild) {
-    promptContainer.removeChild(promptContainer.lastChild);
-  }
-
-  const calcScore = function (arr) {
-    const reducer = (prevValue, currValue) => prevValue + currValue;
-    const score = arr.reduce(reducer);
-    return Number(score);
-  };
-
-  const finalScore = calcScore(answerArray);
-  sessionStorage.setItem("final-score", JSON.stringify(finalScore));
-  const scoreText = document.createElement("p");
-  scoreText.classList.add("score-text");
-
-  scoreArea.appendChild(scoreText);
-  replayMessage.textContent = `${finalScore} Please refresh your browser to take the quiz again.`;
-  scoreArea.appendChild(replayMessage);
-
-  const itemsToClear = ["prompt", "answers"];
-  clearStorage(itemsToClear);
-}
-
 function clearStorage(arr) {
   for (let o = 0; o < arr.length; o++) {
     sessionStorage.clear(arr[o]);
   }
 }
-
+await populateLeaderboard();
 function handleTextArea(event) {
   const targetInput = event.target;
   const textArea = document.querySelector(".text-input");
@@ -535,22 +591,116 @@ function handleTextArea(event) {
   }
 }
 
-const config = { attributes: true };
-const body = document.querySelector("body");
-// Callback function to execute when mutations are observed
-const modalListener = function (mutationsList, observer) {
-  // Use traditional 'for loops' for IE 11
-  for (const mutation of mutationsList) {
-    if (mutation.type === "attributes") {
-      const attr = mutation.attributeName;
-      // if (attr === "modal-state" && attr)
-    } else if (mutation.type === "attributes") {
-      console.log("The " + mutation.attributeName + " attribute was modified.");
-    }
-  }
-};
-const observer = new MutationObserver(modalListener);
-observer.observe(body, config);
-
 startPrompts();
+
+//initialize app
+
+const initModal = document.querySelector("#init-modal");
+const startButton = document.querySelector("#start-quiz");
+const houseInfo = document.querySelector("#house-info");
+const infoArea = document.querySelector(".info-area");
+const houses = ["Slytherin", "Hufflepuff", "Gryffindor", "Ravenclaw"];
+const usernameInput = document.querySelector("#username-input");
+let previousHouse = [];
+let sorted = sessionStorage.getItem("sorted") ?? false;
+
+//🛑need to look into how the "random" functions work - seem to have repeat values sometimes
+const getRandHouse = function () {
+  const max = houses.length - 1;
+  let randNum = Math.floor(Math.random() * (max - 0 + 1) + 0);
+  if (houses[randNum] === previousHouse[previousHouse.length - 1]) {
+    randNum = Math.floor(Math.random() * (max - 0 + 1) + 0);
+  }
+  //   console.log(randNum);
+  return houses[randNum];
+};
+
+//pass in callback so we can start the quiz after the user has been sorted
+function sortUser(callback) {
+  const houseOutput = document.querySelector("#house-output");
+  const houseImg = document.querySelector("#house-img");
+  let callbackCounter = 0;
+  for (let i = 0; i < houses.length * 2; i++) {
+    (function (index) {
+      setTimeout(function () {
+        let randHouse = getRandHouse();
+        if (randHouse === previousHouse[previousHouse.length - 1]) {
+          randHouse = getRandHouse();
+        }
+        previousHouse.push(randHouse);
+        houseOutput.textContent = `${randHouse}!`;
+        houseImg.setAttribute("selected-house", randHouse);
+        //increment callback counter until loop is done
+        callbackCounter++;
+        //once loop is done we can invoke callback and move forward
+        if (callbackCounter == houses.length * 2) {
+          houseInfo.textContent = `${randHouse}`;
+          infoArea.setAttribute("selected-house", randHouse);
+          callback(randHouse);
+        }
+      }, i * 400);
+    })(i);
+  }
+}
+const initCanvas = function () {
+  const canvas = document.getElementById("points");
+  const canvasParent = document.querySelector(".canvas-container");
+  const canvasWidth = canvasParent.getBoundingClientRect().width;
+  const canvasHeight = canvasParent.getBoundingClientRect().height;
+  let context = canvas.getContext("2d");
+  //relative width + height for points chalice
+  canvas.setAttribute("width", canvasWidth);
+  canvas.setAttribute("height", canvasHeight);
+  let pointsBgImg = new Image();
+  pointsBgImg.src = "images/points-bg.png";
+  //draw our points img
+  pointsBgImg.onload = function () {
+    context.drawImage(
+      pointsBgImg,
+      //x axis pos
+      0,
+      //y axis pos
+      0,
+      //width
+      canvasWidth,
+      //height
+      canvasHeight
+    );
+  };
+  // drawPoints(animatePointsClassHandler);
+};
+function startQuiz(house) {
+  sorted = true;
+  houseInfo.textContent = `${house}`;
+  infoArea.setAttribute("selected-house", house);
+  sessionStorage.setItem("sorted", sorted);
+  sessionStorage.setItem("house", house);
+  usernameInput.addEventListener("keyup", function () {
+    if (this.value.length > 5) {
+      startButton.classList.remove("hidden");
+      startButton.addEventListener("click", function () {
+        sessionStorage.setItem("username", usernameInput.value);
+        closeModal(initModal);
+      });
+    }
+  });
+
+  initCanvas();
+}
+
+const init = function () {
+  const houseMessage = document.querySelector("#house-message");
+  openModal(initModal);
+  houseMessage.textContent = `You've been placed in...`;
+
+  sortUser(startQuiz);
+  //🛑need to set up async functions to await the end of house sorting before hiding modal
+  //   initModal.classList.add("hidden");
+};
+if (!sorted) {
+  init();
+} else {
+  const house = sessionStorage.getItem("house");
+  startQuiz(house);
+}
 window.addEventListener("resize", initCanvas);

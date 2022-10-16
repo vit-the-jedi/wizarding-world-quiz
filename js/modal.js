@@ -3,6 +3,7 @@
 let btnCloseModal;
 let modalState = "closed";
 const overlay = document.querySelector(".overlay");
+const body = document.querySelector("body");
 body.setAttribute("modal-state", modalState);
 const openModal = function (targetModal) {
   modalState = "open";
@@ -42,3 +43,4 @@ document.addEventListener("keydown", function (e) {
     closeModal(activeModal);
   }
 });
+export { openModal };
