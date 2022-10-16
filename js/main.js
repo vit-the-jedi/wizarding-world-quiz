@@ -14,7 +14,6 @@ leaderboardOutput.classList.add("data-output");
 leaderboardOutput.classList.add("leaderboard--output");
 
 async function populateLeaderboard() {
-  console.log("auyy");
   //get leaderboard from firebase
   const leaderboardDataFromFB = await getLeaderboardData(db);
   const heading = document.createElement("h3");
@@ -44,10 +43,11 @@ const createRow = (context, index) => {
   return row;
 };
 
-async function leaderboardHandler() {
+async function addToLeaderboard() {
   const docName = sessionStorage.getItem("username");
   const leaderboardData = {
     score: Number(sessionStorage.getItem("score")),
+    country: "",
   };
   await addToFirestore("leaderboard", docName, leaderboardData);
 }
@@ -435,9 +435,7 @@ const showAnswerMessage = function (bool, obj) {
 };
 async function finishPrompts() {
   const promptContainer = document.getElementById("prompt-container");
-  const msgHeader = document.getElementById("message");
-  const leaderboard = document.querySelector("#leaderboard");
-  await leaderboardHandler();
+  await addToLeaderboard();
   while (promptContainer.firstChild) {
     promptContainer.removeChild(promptContainer.lastChild);
   }
